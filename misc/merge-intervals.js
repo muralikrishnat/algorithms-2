@@ -1,34 +1,26 @@
-var mergeIntervals = (arr) => {
-    let len = arr.length;
-    if (len === 1) return arr;
+var merge = function(intervals) {
+    intervals.sort((a, b) => a[0]-b[0]);
+    let index = 0, prev = intervals[index++], len = intervals.length;
     let res = [];
-    let left = 0;
-    arr.sort((a, b) => a.s - b.s);
-    while (left < len - 1) {
-        let cur = arr[left];
-        let next = arr[left + 1];
-        if ((cur.s > next.s && cur.s < next.e) ||
-            (cur.e > next.s && cur.e < next.e)) {
-            console.log('overlap');
-        } else {
-            
+    if(len === 1) return intervals;
+    while(index < len) {
+      let [ss, se] = prev;
+      let [cs, ce] = intervals[index];
+      if (se >= cs) {
+        prev = [Math.min(ss, cs),Math.max(ce, se)];
+        if (index === len - 1) {
+          res.push(prev);
         }
-        left++;
+      } else {
+        res.push(prev);
+        prev = [cs, ce];
+        if (index === len - 1) {
+          res.push([cs, ce]);
+        }
+      }
+      index++;
     }
     return res;
-}
-
-let intervals = [];
-intervals.push({
-    s: 0,
-    e: 2
-});
-intervals.push({
-    s: 3,
-    e: 5
-});
-intervals.push({
-    s: 10,
-    e: 12
-});
-console.log(mergeIntervals(intervals));
+  };
+  
+  console.log(merge([[1,4],[0,4]]));
