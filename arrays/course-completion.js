@@ -90,4 +90,80 @@
   /*
   
   */
+
+
+  /**
+ * @param {number} numCourses
+ * @param {number[][]} prerequisites
+ * @return {number[]}
+ */
+ var findOrder = function(numCourses, prerequisites) {
+  let pre = {}, pLen = prerequisites.length;
+  for(let i = 0; i < pLen; i++) {
+    let [c, p] = prerequisites[i];
+    let l = [], len = 0;
+    if(pre[c]) {
+      l = pre[c].l;
+      len = pre[c].len;
+    }
+    l.push(p);
+    len += 1;
+    pre[c] = {l, len};
+  }
+  let done = [], dp = {};
+  var finishC = (index, path) => {
+    if(dp[index]) {
+      return dp[index];
+    }
+    if(!pre[index]) {
+      dp[index] = true;
+      done.push(index);
+      return dp[index];
+    }
+    let {l, len} = pre[index], r = true
+    for(let i = 0; i < len; i++) {
+      let cI = l[i];
+      if(path[cI]) {
+        r = false;
+        break;
+      } else {
+        let nP = {...path};
+        nP[l[i]] = true;
+        if(r && finishC(l[i], nP)) {
+        } else {
+          r = false;
+          break;
+        }
+      }
+    }
+    dp[index] = r;
+    
+    if(r) {
+      done.push(index);  
+    }
+    return dp[index];
+  };
+  let res = true;
+  for(let i = 0; i < numCourses; i++) {
+    if(res && finishC(i, {})) {
+    } else {
+      res = false;
+      break;
+    }
+  }
+  return done.length === numCourses ? done: [];
+};
+
+findOrder(3, [[0,1],[0,2],[1,2]]);
+// findOrder(4,[[1,0],[2,0],[3,1],[3,2]])
+// findOrder(1,[])
+
+/*
+  pre
+    0 = Done
+    1 = [0]
+    2 = [0]
+    3 = [1,2]
+
+*/
   
